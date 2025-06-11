@@ -62,21 +62,31 @@ interface ApiError {
 
 // Define the theme colors
 const theme = {
-  background: '#f8f9fa',
+  background: '#fafafa',
   surface: '#ffffff',
-  surfaceHover: '#f1f3f5',
-  primary: '#1a73e8',
-  secondary: '#185abc',
+  surfaceHover: '#f5f5f5',
+  primary: '#2563eb',
+  secondary: '#1d4ed8',
+  accent: '#3b82f6',
   text: {
-    primary: '#202124',
-    secondary: '#5f6368',
-    disabled: '#9aa0a6'
+    primary: '#1f2937',
+    secondary: '#4b5563',
+    disabled: '#9ca3af'
   },
-  divider: '#dadce0',
+  divider: '#e5e7eb',
   scrollbar: {
     track: 'transparent',
-    thumb: '#dadce0',
-    thumbHover: '#bdc1c6'
+    thumb: '#e5e7eb',
+    thumbHover: '#d1d5db'
+  },
+  gradient: {
+    primary: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+    surface: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+  },
+  shadow: {
+    small: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+    medium: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+    large: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
   }
 };
 
@@ -194,45 +204,240 @@ function App() {
     <Box sx={{ 
       bgcolor: theme.background,
       minHeight: '100vh',
-      color: theme.text.primary
+      color: theme.text.primary,
+      backgroundImage: 'radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(37, 99, 235, 0.05) 0px, transparent 50%)'
     }}>
       <AppBar position="fixed" elevation={0} sx={{ 
-        bgcolor: theme.surface, 
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(8px)',
         borderBottom: `1px solid ${theme.divider}`,
         zIndex: (theme) => theme.zIndex.drawer + 1
       }}>
         <Toolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <NewspaperIcon sx={{ color: theme.primary, fontSize: 28 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <NewspaperIcon sx={{ 
+              color: theme.primary, 
+              fontSize: 32,
+              filter: 'drop-shadow(0 2px 4px rgba(37, 99, 235, 0.2))'
+            }} />
             <Typography variant="h5" component="h1" sx={{ 
-              color: theme.primary,
-              fontWeight: 600,
+              background: theme.gradient.primary,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 700,
               letterSpacing: '-0.5px'
             }}>
               News Scraper
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          {serverStatus === 'online' && (
-            <Chip 
-              label="Server Online" 
-              color="success" 
-              size="small"
-              sx={{ 
-                height: '24px',
-                bgcolor: 'rgba(76, 175, 80, 0.1)',
-                color: '#4caf50',
-                border: '1px solid rgba(76, 175, 80, 0.3)',
-                '& .MuiChip-label': {
-                  px: 1
-                }
-              }}
-            />
-          )}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Button
+              variant="text"
+              startIcon={<GitHubIcon />}
+              href="https://github.com/Takashiqt"
+              target="_blank"
+              sx={{ color: theme.text.secondary }}
+            >
+              GitHub
+            </Button>
+            {serverStatus === 'online' && (
+              <Chip 
+                label="Server Online" 
+                color="success" 
+                size="small"
+                sx={{ 
+                  height: '28px',
+                  bgcolor: 'rgba(34, 197, 94, 0.1)',
+                  color: '#16a34a',
+                  border: '1px solid rgba(34, 197, 94, 0.2)',
+                  '& .MuiChip-label': {
+                    px: 1.5,
+                    fontWeight: 500
+                  }
+                }}
+              />
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
       <Toolbar /> {/* Spacer for fixed AppBar */}
+
+      {/* Hero Section */}
+      <Box sx={{ 
+        background: theme.gradient.surface,
+        borderBottom: `1px solid ${theme.divider}`,
+        py: 8,
+        mb: 6
+      }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="h2" sx={{ 
+                fontWeight: 800,
+                mb: 2,
+                background: theme.gradient.primary,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: { xs: '2.5rem', md: '3.5rem' }
+              }}>
+                Discover News Instantly
+              </Typography>
+              <Typography variant="h5" sx={{ 
+                color: theme.text.secondary,
+                mb: 4,
+                fontWeight: 400,
+                lineHeight: 1.5
+              }}>
+                Extract and analyze news articles from any website with our powerful scraping tool.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => document.getElementById('scrape-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 2,
+                    background: theme.gradient.primary,
+                    boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)',
+                    '&:hover': {
+                      background: theme.secondary,
+                      boxShadow: '0 6px 8px -1px rgba(37, 99, 235, 0.3)'
+                    }
+                  }}
+                >
+                  Get Started
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  href="https://github.com/Takashiqt"
+                  target="_blank"
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 2,
+                    borderColor: theme.primary,
+                    color: theme.primary,
+                    '&:hover': {
+                      borderColor: theme.secondary,
+                      backgroundColor: 'rgba(37, 99, 235, 0.04)'
+                    }
+                  }}
+                >
+                  Learn More
+                </Button>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ 
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: -20,
+                  left: -20,
+                  right: 20,
+                  bottom: 20,
+                  background: theme.gradient.primary,
+                  borderRadius: 4,
+                  zIndex: 0,
+                  opacity: 0.1
+                }
+              }}>
+                <Paper elevation={0} sx={{ 
+                  p: 4,
+                  borderRadius: 3,
+                  background: 'white',
+                  position: 'relative',
+                  zIndex: 1,
+                  boxShadow: theme.shadow.large
+                }}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Box sx={{ textAlign: 'center', p: 2 }}>
+                        <Typography variant="h3" sx={{ 
+                          color: theme.primary,
+                          fontWeight: 700,
+                          mb: 1
+                        }}>
+                          100+
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: theme.text.secondary }}>
+                          News Sources
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ textAlign: 'center', p: 2 }}>
+                        <Typography variant="h3" sx={{ 
+                          color: theme.primary,
+                          fontWeight: 700,
+                          mb: 1
+                        }}>
+                          24/7
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: theme.text.secondary }}>
+                          Real-time Updates
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider sx={{ my: 2 }} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ 
+                            p: 1.5,
+                            borderRadius: 2,
+                            background: 'rgba(37, 99, 235, 0.1)',
+                            color: theme.primary
+                          }}>
+                            <SearchIcon />
+                          </Box>
+                          <Typography variant="body1" sx={{ color: theme.text.primary, fontWeight: 500 }}>
+                            Advanced Search & Filtering
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ 
+                            p: 1.5,
+                            borderRadius: 2,
+                            background: 'rgba(37, 99, 235, 0.1)',
+                            color: theme.primary
+                          }}>
+                            <SortIcon />
+                          </Box>
+                          <Typography variant="body1" sx={{ color: theme.text.primary, fontWeight: 500 }}>
+                            Smart Content Organization
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ 
+                            p: 1.5,
+                            borderRadius: 2,
+                            background: 'rgba(37, 99, 235, 0.1)',
+                            color: theme.primary
+                          }}>
+                            <FilterListIcon />
+                          </Box>
+                          <Typography variant="body1" sx={{ color: theme.text.primary, fontWeight: 500 }}>
+                            Customizable Filters
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Grid container spacing={4}>
@@ -240,92 +445,146 @@ function App() {
           <Grid item xs={12} md={4} lg={3}>
             <Paper elevation={0} sx={{ 
               p: 3, 
-              bgcolor: theme.surface,
-              borderRadius: 2,
+              background: theme.gradient.surface,
+              borderRadius: 3,
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
               gap: 3,
-              border: `1px solid ${theme.divider}`
+              border: `1px solid ${theme.divider}`,
+              boxShadow: theme.shadow.medium,
+              transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadow.large
+              }
             }}>
-              <Box>
-                <Typography variant="h6" gutterBottom sx={{ 
-                  color: theme.text.primary, 
-                  mb: 2,
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1
+              <Typography variant="h6" sx={{ 
+                color: theme.text.primary,
+                fontWeight: 600,
+                mb: 1
+              }}>
+                Quick Links
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {newsUrls.map((newsUrl, index) => (
+                  <Button
+                    key={index}
+                    variant="outlined"
+                    startIcon={<LanguageIcon />}
+                    onClick={() => setUrl(newsUrl.url)}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textTransform: 'none',
+                      borderColor: theme.divider,
+                      color: theme.text.secondary,
+                      '&:hover': {
+                        borderColor: theme.primary,
+                        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+                        color: theme.primary
+                      }
+                    }}
+                  >
+                    {newsUrl.name}
+                  </Button>
+                ))}
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Main Content */}
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper elevation={0} sx={{ 
+              p: 4,
+              background: theme.gradient.surface,
+              borderRadius: 3,
+              border: `1px solid ${theme.divider}`,
+              boxShadow: theme.shadow.medium
+            }} id="scrape-section">
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ 
+                  mb: 3,
+                  fontWeight: 600,
+                  color: theme.text.primary
                 }}>
-                  <LinkIcon sx={{ color: theme.primary }} />
-                  Scrape Settings
+                  Enter Website URL
                 </Typography>
-                <TextField
-                  fullWidth
-                  label="Enter Website URL"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="e.g., https://news.abs-cbn.com/"
-                  disabled={loading}
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LinkIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={scrapeNews}
-                  disabled={loading || !url}
-                  fullWidth
-                  sx={{ 
-                    mb: 2,
-                    bgcolor: theme.primary,
-                    color: '#fff',
-                    py: 1.2,
-                    '&:hover': {
-                      bgcolor: theme.secondary,
-                    }
-                  }}
-                >
-                  {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Scrape News'}
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Enter news website URL"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LinkIcon sx={{ color: theme.text.secondary }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                        backgroundColor: 'white',
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.primary
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.primary,
+                          borderWidth: 2
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={scrapeNews}
+                    disabled={loading}
+                    sx={{
+                      px: 4,
+                      borderRadius: 2,
+                      background: theme.gradient.primary,
+                      boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)',
+                      '&:hover': {
+                        background: theme.secondary,
+                        boxShadow: '0 6px 8px -1px rgba(37, 99, 235, 0.3)'
+                      }
+                    }}
+                  >
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Scrape'}
+                  </Button>
+                </Box>
               </Box>
 
-              <Divider />
-
-              <Box>
-                <Typography variant="h6" gutterBottom sx={{ 
-                  color: theme.text.primary, 
-                  mb: 2,
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1
-                }}>
-                  <FilterListIcon sx={{ color: theme.primary }} />
-                  Filter & Sort
-                </Typography>
+              {/* Filter and Sort Controls */}
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 2, 
+                mb: 4,
+                flexWrap: 'wrap'
+              }}>
                 <TextField
-                  fullWidth
-                  label="Filter by keyword"
+                  size="small"
+                  placeholder="Filter by keyword"
                   value={filterKeyword}
                   onChange={(e) => setFilterKeyword(e.target.value)}
-                  placeholder="e.g., technology, politics"
-                  disabled={news.length === 0}
-                  sx={{ mb: 2 }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <SearchIcon color="action" />
+                        <SearchIcon sx={{ color: theme.text.secondary }} />
                       </InputAdornment>
                     ),
                   }}
+                  sx={{
+                    minWidth: 200,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      backgroundColor: 'white'
+                    }
+                  }}
                 />
-                <FormControl fullWidth disabled={news.length === 0}>
+                <FormControl size="small" sx={{ minWidth: 150 }}>
                   <InputLabel>Sort by</InputLabel>
                   <Select
                     value={sortBy}
@@ -333,9 +592,13 @@ function App() {
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'title')}
                     startAdornment={
                       <InputAdornment position="start">
-                        <SortIcon color="action" />
+                        <SortIcon sx={{ color: theme.text.secondary }} />
                       </InputAdornment>
                     }
+                    sx={{
+                      borderRadius: 2,
+                      backgroundColor: 'white'
+                    }}
                   >
                     <MenuItem value="date">Date</MenuItem>
                     <MenuItem value="title">Title</MenuItem>
@@ -343,70 +606,19 @@ function App() {
                 </FormControl>
               </Box>
 
-              <Divider />
-
-              <Box sx={{ mt: 'auto' }}>
-                <Typography variant="subtitle1" sx={{ 
-                  color: theme.text.primary,
-                  fontWeight: 500,
-                  mb: 2
-                }}>
-                  Popular News Sources
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {newsUrls.map((item, index) => (
-                    <Button
-                      key={index}
-                      variant="text"
-                      onClick={() => setUrl(item.url)}
-                      sx={{
-                        justifyContent: 'flex-start',
-                        textTransform: 'none',
-                        color: theme.text.secondary,
-                        py: 1,
-                        '&:hover': {
-                          bgcolor: theme.surfaceHover,
-                          color: theme.primary
-                        }
-                      }}
-                    >
-                      {item.name}
-                    </Button>
-                  ))}
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Main Content */}
-          <Grid item xs={12} md={8} lg={9}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
-              </Alert>
-            )}
-
-            {loading && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                <CircularProgress sx={{ color: theme.primary }} />
-              </Box>
-            )}
-
-            {!loading && news.length > 0 && (
+              {/* News Grid */}
               <Grid container spacing={3}>
                 {filteredAndSortedNews.map((item, index) => (
                   <Grid item xs={12} sm={6} lg={4} key={index}>
                     <Card sx={{ 
-                      height: '100%', 
-                      display: 'flex', 
+                      height: '100%',
+                      display: 'flex',
                       flexDirection: 'column',
-                      transition: 'transform 0.2s, box-shadow 0.2s',
-                      bgcolor: theme.surface,
-                      border: `1px solid ${theme.divider}`,
+                      borderRadius: 3,
+                      transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                       '&:hover': {
                         transform: 'translateY(-4px)',
-                        boxShadow: 3,
-                        bgcolor: theme.surfaceHover
+                        boxShadow: theme.shadow.large
                       }
                     }}>
                       {item.imageUrl && (
@@ -415,67 +627,42 @@ function App() {
                           height="200"
                           image={item.imageUrl}
                           alt={item.title}
-                          sx={{ objectFit: 'cover' }}
+                          sx={{
+                            objectFit: 'cover',
+                            borderTopLeftRadius: 12,
+                            borderTopRightRadius: 12
+                          }}
                         />
                       )}
-                      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        <Typography variant="h6" component="h2" sx={{ 
-                          color: theme.text.primary,
-                          fontSize: '1.1rem',
+                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                        <Typography variant="h6" sx={{ 
+                          mb: 1,
                           fontWeight: 600,
-                          lineHeight: 1.4
+                          color: theme.text.primary,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
                         }}>
                           {item.title}
                         </Typography>
-                        <Box sx={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          gap: 0.5,
-                          mt: 1
-                        }}>
-                          {item.author && (
-                            <Typography variant="body2" sx={{ 
-                              color: theme.text.secondary,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5
-                            }}>
-                              <strong>Author:</strong> {item.author}
-                            </Typography>
-                          )}
-                          <Typography variant="body2" sx={{ 
-                            color: theme.text.secondary,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5
-                          }}>
-                            <strong>Date:</strong> {new Date(item.date).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </Typography>
-                          <Typography variant="body2" sx={{ 
-                            color: theme.text.disabled,
-                            fontSize: '0.875rem',
-                            mt: 0.5
-                          }}>
-                            Source: {item.source}
-                          </Typography>
-                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          {item.author} • {new Date(item.date).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Source: {item.source}
+                        </Typography>
                       </CardContent>
-                      <CardActions sx={{ px: 2, pb: 2 }}>
-                        <Button 
-                          size="small" 
-                          href={item.url} 
+                      <CardActions sx={{ p: 2, pt: 0 }}>
+                        <Button
+                          size="small"
+                          href={item.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          sx={{ 
+                          sx={{
                             color: theme.primary,
                             '&:hover': {
-                              color: theme.secondary
+                              backgroundColor: 'rgba(37, 99, 235, 0.04)'
                             }
                           }}
                         >
@@ -486,30 +673,240 @@ function App() {
                   </Grid>
                 ))}
               </Grid>
-            )}
 
-            {!loading && news.length === 0 && !error && (
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 4, 
-                  textAlign: 'center',
-                  bgcolor: theme.surface,
-                  borderRadius: 2,
-                  border: `1px solid ${theme.divider}`
-                }}
-              >
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No News Articles Found
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Enter a news website URL above to start scraping articles.
-                </Typography>
-              </Paper>
-            )}
+              {error && (
+                <Alert 
+                  severity="error" 
+                  sx={{ 
+                    mt: 3,
+                    borderRadius: 2,
+                    '& .MuiAlert-icon': {
+                      color: '#ef4444'
+                    }
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+            </Paper>
           </Grid>
         </Grid>
       </Container>
+
+      {/* Ethical Considerations Section */}
+      <Box sx={{ 
+        mt: 8,
+        py: 6,
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+        borderTop: `1px solid ${theme.divider}`,
+        borderBottom: `1px solid ${theme.divider}`
+      }}>
+        <Container maxWidth="xl">
+          <Typography variant="h4" sx={{ 
+            mb: 4,
+            textAlign: 'center',
+            fontWeight: 700,
+            background: theme.gradient.primary,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Ethical Considerations
+          </Typography>
+          
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Paper elevation={0} sx={{ 
+                p: 4,
+                height: '100%',
+                borderRadius: 3,
+                background: 'white',
+                border: `1px solid ${theme.divider}`,
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: theme.shadow.large
+                }
+              }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.primary }}>
+                  When is Scraping Allowed?
+                </Typography>
+                <Typography variant="body1" sx={{ color: theme.text.secondary, mb: 2 }}>
+                  Web scraping is generally allowed when:
+                </Typography>
+                <Box component="ul" sx={{ 
+                  pl: 2,
+                  color: theme.text.secondary,
+                  '& li': { mb: 1 }
+                }}>
+                  <li>The website's terms of service permit it</li>
+                  <li>The data is publicly available</li>
+                  <li>You're not bypassing authentication</li>
+                  <li>You're not overloading the server</li>
+                  <li>You're using the data for legitimate purposes</li>
+                </Box>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Paper elevation={0} sx={{ 
+                p: 4,
+                height: '100%',
+                borderRadius: 3,
+                background: 'white',
+                border: `1px solid ${theme.divider}`,
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: theme.shadow.large
+                }
+              }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.primary }}>
+                  Respecting robots.txt
+                </Typography>
+                <Typography variant="body1" sx={{ color: theme.text.secondary, mb: 2 }}>
+                  Always check and respect robots.txt files:
+                </Typography>
+                <Box component="ul" sx={{ 
+                  pl: 2,
+                  color: theme.text.secondary,
+                  '& li': { mb: 1 }
+                }}>
+                  <li>Check the robots.txt file before scraping</li>
+                  <li>Respect crawl-delay directives</li>
+                  <li>Don't access disallowed paths</li>
+                  <li>Use appropriate user-agent strings</li>
+                  <li>Implement rate limiting</li>
+                </Box>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Paper elevation={0} sx={{ 
+                p: 4,
+                height: '100%',
+                borderRadius: 3,
+                background: 'white',
+                border: `1px solid ${theme.divider}`,
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: theme.shadow.large
+                }
+              }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: theme.primary }}>
+                  Legal Alternatives
+                </Typography>
+                <Typography variant="body1" sx={{ color: theme.text.secondary, mb: 2 }}>
+                  Consider these legal alternatives:
+                </Typography>
+                <Box component="ul" sx={{ 
+                  pl: 2,
+                  color: theme.text.secondary,
+                  '& li': { mb: 1 }
+                }}>
+                  <li>Official APIs and RSS feeds</li>
+                  <li>News aggregator services</li>
+                  <li>Data marketplaces</li>
+                  <li>Direct partnerships with news sources</li>
+                  <li>Public datasets and archives</li>
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ 
+            mt: 6,
+            p: 4,
+            borderRadius: 3,
+            background: 'rgba(37, 99, 235, 0.04)',
+            border: '1px solid rgba(37, 99, 235, 0.1)'
+          }}>
+            <Typography variant="h6" sx={{ 
+              mb: 2,
+              color: theme.primary,
+              fontWeight: 600
+            }}>
+              Best Practices
+            </Typography>
+            <Typography variant="body1" sx={{ color: theme.text.secondary }}>
+              Always ensure your web scraping activities are ethical and legal. This tool is designed for educational purposes and should be used responsibly. 
+              Consider the impact on the target websites and respect their resources and terms of service.
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ 
+        mt: 8,
+        py: 6,
+        background: theme.gradient.surface,
+        borderTop: `1px solid ${theme.divider}`
+      }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <NewspaperIcon sx={{ color: theme.primary, fontSize: 28 }} />
+                <Typography variant="h6" sx={{ 
+                  color: theme.text.primary,
+                  fontWeight: 600
+                }}>
+                  News Scraper
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: theme.text.secondary, mb: 2 }}>
+                Extract and analyze news articles from any website with our powerful scraping tool.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <IconButton href="https://github.com/Takashiqt" target="_blank" sx={{ color: theme.text.secondary }}>
+                  <GitHubIcon />
+                </IconButton>
+                <IconButton href="https://www.facebook.com/share/18yzMwNkmm/" target="_blank" sx={{ color: theme.text.secondary }}>
+                  <FacebookIcon />
+                </IconButton>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Quick Links
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {newsUrls.slice(0, 4).map((newsUrl, index) => (
+                  <Button
+                    key={index}
+                    variant="text"
+                    onClick={() => setUrl(newsUrl.url)}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textTransform: 'none',
+                      color: theme.text.secondary,
+                      '&:hover': {
+                        color: theme.primary,
+                        backgroundColor: 'transparent'
+                      }
+                    }}
+                  >
+                    {newsUrl.name}
+                  </Button>
+                ))}
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                About
+              </Typography>
+              <Typography variant="body2" sx={{ color: theme.text.secondary, mb: 2 }}>
+                News Scraper is a powerful tool that helps you extract and analyze news articles from various websites. Stay informed with the latest news from your favorite sources.
+              </Typography>
+            </Grid>
+          </Grid>
+          <Divider sx={{ my: 4 }} />
+          <Typography variant="body2" sx={{ color: theme.text.secondary, textAlign: 'center' }}>
+            © {new Date().getFullYear()} News Scraper. All rights reserved.
+          </Typography>
+        </Container>
+      </Box>
     </Box>
   );
 }
