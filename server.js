@@ -6,7 +6,6 @@ const cheerio = require('cheerio');
 const app = express();
 const port = process.env.PORT || 5000;
 
-
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST'],
@@ -15,12 +14,10 @@ app.use(cors({
 
 app.use(express.json());
 
-
 app.get('/api/test', (req, res) => {
   console.log('Test endpoint hit');
   res.json({ message: 'Server is running' });
 });
-
 
 app.post('/api/scrape', async (req, res) => {
   console.log('Scrape endpoint hit');
@@ -34,7 +31,6 @@ app.post('/api/scrape', async (req, res) => {
   console.log('Scraping URL:', url);
 
   try {
-    
     try {
       new URL(url);
     } catch (e) {
@@ -44,7 +40,6 @@ app.post('/api/scrape', async (req, res) => {
 
     console.log('Fetching content from:', url);
 
-   
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -82,7 +77,6 @@ app.post('/api/scrape', async (req, res) => {
     const newsItems = [];
     const articlePromises = [];
 
-    
     const websiteSelectors = {
       'abs-cbn.com': {
         article: [
@@ -196,27 +190,22 @@ app.post('/api/scrape', async (req, res) => {
       }
     };
 
-    
     const hostname = new URL(url).hostname;
     const selectors = websiteSelectors[hostname] || websiteSelectors.default;
 
     console.log('Using selectors for:', hostname);
 
-    
     const articleLinks = new Set();
-    
-    
+
     selectors.article.forEach(articleSelector => {
       $(articleSelector).each((_, element) => {
         const $element = $(element);
-        
         const links = $element.find('a');
         links.each((_, link) => {
           const href = $(link).attr('href');
           if (href) {
             try {
               const absoluteUrl = href.startsWith('http') ? href : new URL(href, url).href;
-              
               if (absoluteUrl.includes('/news/') || 
                   absoluteUrl.includes('/article/') || 
                   absoluteUrl.includes('/story/') ||
@@ -231,7 +220,6 @@ app.post('/api/scrape', async (req, res) => {
       });
     });
 
-   
     if (articleLinks.size === 0) {
       console.log('No articles found with selectors, trying general approach...');
       $('a').each((_, link) => {
@@ -239,7 +227,6 @@ app.post('/api/scrape', async (req, res) => {
         if (href) {
           try {
             const absoluteUrl = href.startsWith('http') ? href : new URL(href, url).href;
-            
             if (absoluteUrl.includes('/news/') || 
                 absoluteUrl.includes('/article/') || 
                 absoluteUrl.includes('/story/') ||
@@ -255,7 +242,6 @@ app.post('/api/scrape', async (req, res) => {
 
     console.log('Found', articleLinks.size, 'article links');
 
-    
     for (const articleUrl of articleLinks) {
       try {
         console.log('Fetching article:', articleUrl);
@@ -269,78 +255,82 @@ app.post('/api/scrape', async (req, res) => {
 
         if (articleResponse.status === 200) {
           const $article = cheerio.load(articleResponse.data);
-          
-          
           let title = '';
-          selectors.title.forEach(selector => {
-            const found = $article(selector).first().text().trim();
-            if (found) title = found;
-          });
-
-          
-          if (!title) {
-            title = $article('h1, h2, h3, h4, h5, h6').first().text().trim();
-          }
-
-          
           let author = '';
-          selectors.author.forEach(selector => {
-            const found = $article(selector).first();
-            if (found.length) {
-              if (selector.startsWith('meta')) {
-                const content = found.attr('content');
-                if (content) author = content;
-              } else {
-                const text = found.text().trim();
-                if (text) author = text;
-              }
-            }
-          });
-
-          
           let date = '';
-          selectors.date.forEach(selector => {
-            const found = $article(selector).first();
-            if (found.length) {
-              if (selector.startsWith('meta')) {
-                const content = found.attr('content');
-                if (content) date = content;
-              } else {
-                const text = found.text().trim();
-                if (text) date = text;
-              }
-            }
-          });
+          let imageUrl = '';
+          let content = '';
 
-      
-          let formattedDate = '';
-          if (date) {
-            try {
-              
-              const dateObj = new Date(date);
-              if (!isNaN(dateObj.getTime())) {
-                formattedDate = dateObj.toISOString();
-              } else {
-                
-                const dateMatch = date.match(/(\d{4}[-/]\d{1,2}[-/]\d{1,2})|(\d{1,2}[-/]\d{1,2}[-/]\d{4})/);
-                if (dateMatch) {
-                  const extractedDate = new Date(dateMatch[0]);
-                  if (!isNaN(extractedDate.getTime())) {
-                    formattedDate = extractedDate.toISOString();
-                  }
-                }
-              }
-            } catch (e) {
-              console.log('Error formatting date:', date);
+          // Extract title
+          for (const selector of selectors.title) {
+            const titleElement = $article(selector).first();
+            if (titleElement.length) {
+              title = titleElement.text().trim();
+              break;
             }
           }
 
-          
-          let imageUrl = '';
+          // Extract author
+          for (const selector of selectors.author) {
+            const authorElement = $article(selector).first();
+            if (authorElement.length) {
+              author = authorElement.text().trim();
+              break;
+            }
+          }
+
+          // Extract date
+          for (const selector of selectors.date) {
+            const dateElement = $article(selector).first();
+            if (dateElement.length) {
+              date = dateElement.text().trim();
+              break;
+            }
+          }
+
+          // Extract content
+          const contentSelectors = [
+            'article .content',
+            'article .article-content',
+            'article .story-content',
+            'article .post-content',
+            'article .entry-content',
+            '.article-body',
+            '.story-body',
+            '.post-body',
+            '.entry-body',
+            '[itemprop="articleBody"]',
+            '.article__content',
+            '.story__content',
+            '.post__content',
+            '.entry__content'
+          ];
+
+          for (const selector of contentSelectors) {
+            const contentElement = $article(selector).first();
+            if (contentElement.length) {
+              // Remove unwanted elements
+              contentElement.find('script, style, iframe, .advertisement, .ad, .social-share, .related-articles').remove();
+              content = contentElement.text().trim();
+              break;
+            }
+          }
+
+          // If no content found with selectors, try to get paragraphs
+          if (!content) {
+            const paragraphs = $article('article p, .article p, .story p, .post p, .entry p');
+            if (paragraphs.length) {
+              content = Array.from(paragraphs)
+                .map(p => $article(p).text().trim())
+                .filter(text => text.length > 0)
+                .join('\n\n');
+            }
+          }
+
+          // Extract image
           selectors.image.forEach(selector => {
             const img = $article(selector).first();
             if (img.length) {
-              
               const possibleSrcs = [
                 img.attr('src'),
                 img.attr('data-src'),
@@ -354,7 +344,6 @@ app.post('/api/scrape', async (req, res) => {
                 if (src && !src.startsWith('data:') && !src.includes('svg')) {
                   try {
                     const absoluteUrl = src.startsWith('http') ? src : new URL(src, articleUrl).href;
-                    
                     if (absoluteUrl.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
                       imageUrl = absoluteUrl;
                       break;
@@ -367,7 +356,6 @@ app.post('/api/scrape', async (req, res) => {
             }
           });
 
-          
           if (!imageUrl) {
             const imgs = $article('img');
             for (let i = 0; i < imgs.length; i++) {
@@ -385,7 +373,6 @@ app.post('/api/scrape', async (req, res) => {
                 if (src && !src.startsWith('data:') && !src.includes('svg')) {
                   try {
                     const absoluteUrl = src.startsWith('http') ? src : new URL(src, articleUrl).href;
-                    
                     if (absoluteUrl.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
                       imageUrl = absoluteUrl;
                       break;
@@ -399,6 +386,26 @@ app.post('/api/scrape', async (req, res) => {
             }
           }
 
+          let formattedDate = '';
+          if (date) {
+            try {
+              const dateObj = new Date(date);
+              if (!isNaN(dateObj.getTime())) {
+                formattedDate = dateObj.toISOString();
+              } else {
+                const dateMatch = date.match(/(\d{4}[-/]\d{1,2}[-/]\d{1,2})|(\d{1,2}[-/]\d{1,2}[-/]\d{4})/);
+                if (dateMatch) {
+                  const extractedDate = new Date(dateMatch[0]);
+                  if (!isNaN(extractedDate.getTime())) {
+                    formattedDate = extractedDate.toISOString();
+                  }
+                }
+              }
+            } catch (e) {
+              console.log('Error formatting date:', date);
+            }
+          }
+
           if (title) {
             newsItems.push({
               title,
@@ -406,7 +413,8 @@ app.post('/api/scrape', async (req, res) => {
               date: formattedDate || new Date().toISOString(),
               source: hostname,
               url: articleUrl,
-              imageUrl: imageUrl || null
+              imageUrl: imageUrl || null,
+              content: content || null
             });
           }
         }
@@ -426,7 +434,6 @@ app.post('/api/scrape', async (req, res) => {
     res.json({ news: newsItems });
   } catch (error) {
     console.error('Error scraping:', error);
-    
     if (error.response) {
       res.status(error.response.status).json({ 
         error: `Server responded with status ${error.response.status}` 
@@ -443,14 +450,56 @@ app.post('/api/scrape', async (req, res) => {
   }
 });
 
+// --- NEW ENDPOINT FOR SCRAPING A SINGLE ARTICLE ---
+app.post('/api/article', async (req, res) => {
+  const { url } = req.body;
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
+  try {
+    const headers = {
+      'User-Agent': 'Mozilla/5.0',
+      'Accept': 'text/html',
+    };
+    const response = await axios.get(url, { headers, timeout: 10000 });
+    if (response.status !== 200) {
+      return res.status(response.status).json({ error: 'Failed to fetch article' });
+    }
+    const $ = cheerio.load(response.data);
+
+    // Try to extract main content
+    const title = $('h1').first().text().trim() || $('title').text().trim();
+    const author = $('[itemprop="author"]').first().text().trim() || $('.author').first().text().trim() || '';
+    const date = $('[itemprop="datePublished"]').first().text().trim() || $('.date').first().text().trim() || '';
+    const imageUrl = $('img').first().attr('src') || '';
+    // Try to get the main article body
+    let body = '';
+    if ($('article').length) {
+      body = $('article').text().trim();
+    } else {
+      body = $('p').map((i, el) => $(el).text()).get().join('\n\n').trim();
+    }
+
+    res.json({
+      title,
+      author,
+      date,
+      imageUrl,
+      body,
+      url
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to scrape article.' });
+  }
+});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something broke!' });
 });
 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log(`Test the server at http://localhost:${port}/api/test`);
-}); 
+});
